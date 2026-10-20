@@ -1,0 +1,794 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings — Flowday</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: Inter, system-ui, Arial, sans-serif;
+            background: #090d18;
+            color: #eef2ff;
+        }
+        button, input { font: inherit; }
+        button { cursor: pointer; }
+        .layout { display: flex; min-height: 100vh; }
+        aside {
+            width: 250px; padding: 28px 18px;
+            border-right: 1px solid #222a3c;
+            background: #0d1220; flex-shrink: 0;
+        }
+        .brand { font-size: 23px; font-weight: 800; margin: 4px 10px 34px; }
+        .brand span { color: #a78bfa; }
+        .back {
+            display: block; text-decoration: none; color: #aab5cc;
+            padding: 12px; border-radius: 10px; margin-bottom: 28px;
+        }
+        .back:hover, .nav button:hover { background: #1b2336; color: white; }
+        .label {
+            color: #75819b; font-size: 11px; font-weight: 800;
+            letter-spacing: 1.5px; padding: 0 12px; margin-bottom: 12px;
+        }
+        .nav { display: grid; gap: 7px; }
+        .nav button {
+            border: 0; text-align: left; color: #aab5cc;
+            background: transparent; padding: 13px 12px;
+            border-radius: 10px; font-size: 14px;
+        }
+        .nav button.active { background: #33266e; color: #fff; }
+        main { flex: 1; min-width: 0; padding: 42px; }
+        .content { max-width: 850px; margin: 0 auto; }
+        h1 { margin: 0 0 9px; font-size: 30px; }
+        .subtitle { color: #8995ae; margin: 0 0 32px; line-height: 1.6; }
+        .card {
+            background: #111a2c; border: 1px solid #253049;
+            border-radius: 17px; padding: 25px; margin-bottom: 20px;
+        }
+        .card h2 { margin: 0 0 7px; font-size: 18px; }
+        .muted { color: #8995ae; font-size: 13px; line-height: 1.6; }
+        .avatar {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    background: #35266e;
+    display: grid;
+    place-items: center;
+    font-size: 25px;
+    margin: 0 auto 22px;
+}
+        .field { margin-top: 21px; }
+        .field label { display: block; font-size: 13px; margin-bottom: 9px; }
+        input {
+            width: 100%; color: white; background: #0c1323;
+            border: 1px solid #303b54; border-radius: 11px;
+            padding: 13px 14px; outline: none;
+        }
+        input:focus { border-color: #8b5cf6; }
+        input:disabled { color: #aab5cc; opacity: .8; }
+        .actions { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+        .btn {
+            border: 1px solid #303b54; border-radius: 10px;
+            padding: 11px 17px; color: #e5e7eb; background: #192238;
+        }
+        .primary { background: #6246ea; border-color: #6246ea; color: white; font-weight: 700; }
+        .primary:disabled { opacity: .6; cursor: wait; }
+        .status { min-height: 20px; font-size: 13px; margin-top: 15px; color: #a7f3d0; }
+        .hidden { display: none !important; }
+        .setting-row {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 20px; padding: 17px 0; border-bottom: 1px solid #253049;
+        }
+        .setting-row:last-child { border-bottom: 0; }
+        .setting-row strong { display: block; font-size: 14px; margin-bottom: 5px; }
+        .setting-row select {
+            color: white; background: #0c1323; border: 1px solid #303b54;
+            padding: 9px; border-radius: 9px;
+        }
+        @media (max-width: 700px) {
+            .layout { display: block; }
+            aside { width: 100%; padding: 17px; border-right: 0; border-bottom: 1px solid #222a3c; }
+            .brand { margin: 4px 8px 16px; }
+            .back { margin-bottom: 12px; }
+            .nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            main { padding: 25px 16px; }
+            .card { padding: 19px; }
+            h1 { font-size: 26px; }
+        }
+    
+body.light-theme {
+    background: #f4f6fb;
+    color: #172033;
+}
+
+body.light-theme aside {
+    background: #ffffff;
+    border-color: #dce2ee;
+}
+
+body.light-theme .card {
+    background: #ffffff;
+    border-color: #dce2ee;
+}
+
+body.light-theme input,
+body.light-theme .setting-row select {
+    background: #f8faff;
+    color: #172033;
+    border-color: #cbd5e1;
+}
+
+body.light-theme .nav button {
+    color: #475569;
+}
+
+body.light-theme .nav button.active {
+    background: #e5ddff;
+    color: #34216f;
+}
+
+body.light-theme .muted,
+body.light-theme .subtitle {
+    color: #64748b;
+}
+
+body.light-theme .btn {
+    background: #e9edf5;
+    color: #172033;
+    border-color: #cbd5e1;
+}
+
+body.light-theme .btn.primary {
+    background: #6246ea;
+    color: #ffffff;
+    border-color: #6246ea;
+}
+.card h2 {
+    text-align: right;
+}
+
+/* Flowday colorful settings polish */
+:root {
+    --accent: #8b5cf6;
+    --accent-blue: #6366f1;
+    --accent-pink: #d946ef;
+}
+
+body {
+    background:
+        radial-gradient(ellipse at 12% 0%, rgba(99,102,241,.16), transparent 38%),
+        radial-gradient(ellipse at 88% 12%, rgba(217,70,239,.10), transparent 34%),
+        #090d18;
+}
+
+aside {
+    background: linear-gradient(180deg, #11152a, #0d1220);
+}
+
+.brand span {
+    background: linear-gradient(90deg, #818cf8, #c084fc, #f0abfc);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.card {
+    background: linear-gradient(145deg, rgba(24,31,55,.96), rgba(17,26,44,.96));
+    border: 1px solid rgba(139,92,246,.24);
+    box-shadow: 0 12px 35px rgba(0,0,0,.12);
+    transition: border-color .2s, transform .2s, box-shadow .2s;
+}
+
+.card:hover {
+    border-color: rgba(139,92,246,.55);
+    box-shadow: 0 14px 38px rgba(99,102,241,.10);
+}
+
+.nav button {
+    transition: background .2s, color .2s;
+}
+
+.nav button.active {
+    background: linear-gradient(100deg, #6246ea, #8b5cf6, #a855f7);
+    color: #fff;
+    box-shadow: 0 5px 18px rgba(99,102,241,.24);
+}
+
+input:focus,
+.setting-row select:focus {
+    border-color: #a78bfa;
+    box-shadow: 0 0 0 3px rgba(139,92,246,.15);
+}
+
+.btn.primary {
+    background: linear-gradient(100deg, #6246ea, #8b5cf6);
+    border-color: transparent;
+    box-shadow: 0 5px 16px rgba(99,102,241,.20);
+}
+
+.btn.primary:hover {
+    filter: brightness(1.12);
+}
+
+body.light-theme {
+    background:
+        radial-gradient(ellipse at 12% 0%, rgba(99,102,241,.10), transparent 38%),
+        radial-gradient(ellipse at 88% 12%, rgba(217,70,239,.08), transparent 34%),
+        #f4f6fb;
+}
+
+body.light-theme aside {
+    background: linear-gradient(180deg, #ffffff, #f5f3ff);
+}
+
+body.light-theme .card {
+    background: linear-gradient(145deg, #ffffff, #faf8ff);
+    border-color: #e1d8ff;
+    box-shadow: 0 10px 28px rgba(74,55,130,.07);
+}
+
+body.light-theme .nav button.active {
+    background: linear-gradient(100deg, #6246ea, #8b5cf6, #a855f7);
+    color: #fff;
+}
+
+body.light-theme .setting-row {
+    border-color: #e2e8f0;
+}
+
+body.light-theme input:focus,
+body.light-theme .setting-row select:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139,92,246,.12);
+}
+
+/* Light theme: stronger colorful gradients */
+body.light-theme {
+    background:
+        radial-gradient(ellipse at 8% 5%,
+            rgba(129, 140, 248, 0.28), transparent 38%),
+        radial-gradient(ellipse at 90% 8%,
+            rgba(232, 121, 249, 0.23), transparent 35%),
+        radial-gradient(ellipse at 50% 100%,
+            rgba(96, 165, 250, 0.18), transparent 42%),
+        linear-gradient(135deg, #f5f3ff, #eef2ff 48%, #fdf2f8);
+}
+
+body.light-theme aside {
+    background:
+        radial-gradient(ellipse at top left,
+            rgba(196, 181, 253, 0.32), transparent 60%),
+        linear-gradient(180deg, #ffffff, #f3f0ff, #eef2ff);
+}
+
+body.light-theme .card {
+    background:
+        linear-gradient(135deg,
+            rgba(255, 255, 255, 0.98),
+            rgba(245, 243, 255, 0.96) 55%,
+            rgba(253, 242, 248, 0.96));
+    border: 1px solid rgba(139, 92, 246, 0.24);
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.09);
+}
+
+body.light-theme .card:hover {
+    border-color: rgba(139, 92, 246, 0.48);
+    box-shadow: 0 14px 34px rgba(139, 92, 246, 0.15);
+}
+
+body.light-theme .nav button.active {
+    background: linear-gradient(110deg, #6366f1, #8b5cf6, #d946ef);
+    color: #ffffff;
+    box-shadow: 0 5px 18px rgba(139, 92, 246, 0.25);
+}
+
+body.light-theme .btn.primary {
+    background: linear-gradient(110deg, #6366f1, #8b5cf6, #a855f7);
+    color: #ffffff;
+    border-color: transparent;
+}
+
+body.light-theme input:focus,
+body.light-theme .setting-row select:focus {
+    border-color: #8b5cf6;
+    box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.16);
+}
+
+
+    </style>
+</head>
+<body>
+<div class="layout">
+    <aside>
+        <div class="brand">Flowday <span>PRO</span></div>
+        <a class="back" href="/dashboard">← Back to Dashboard</a>
+        <div class="label">SETTINGS</div>
+        <nav class="nav">
+            <button class="active" data-page="account">♙ Account & Profile</button>
+            <button data-page="appearance">◐ Appearance</button>
+            <button data-page="preferences">⚙ Preferences</button>
+        </nav>
+    </aside>
+
+    <main>
+        <div class="content">
+            <section id="account" class="page">
+                <h1>Account & Profile</h1>
+                <p class="subtitle">Manage your personal information and account details.</p>
+                <div class="card">
+                    
+<div class="avatar" id="profileAvatar">♙</div>
+
+<div class="field">
+    <label for="profilePhotoInput">Profile photo</label>
+    <input
+        id="profilePhotoInput"
+        type="file"
+        accept="image/png,image/jpeg,image/webp"
+    >
+    <p class="muted">Choose a JPG, PNG, or WebP image.</p>
+    <button class="btn" type="button" id="uploadPhotoButton">
+        Upload Photo
+    </button>
+    <div id="photoStatus" class="status" role="status"></div>
+</div>
+                    <h2>Personal information</h2>
+                    <p class="muted">Your name is used to personalize your Flowday dashboard.</p>
+                    <form id="profileForm">
+                        <div class="field">
+                            <label for="profileNameInput">Full name</label>
+                            <input id="profileNameInput" maxlength="100" required autocomplete="name">
+                        </div>
+                        <div class="field">
+                            <label for="profileEmailInput">Email address</label>
+                            <input id="profileEmailInput" type="email" required autocomplete="email">
+                            
+                        </div>
+                        <div class="actions">
+                            <button class="btn" type="button" id="cancelProfile">Cancel</button>
+                            <button class="btn primary" id="saveProfile" type="submit">Save Changes</button>
+                        </div>
+                        <div id="profileStatus" class="status" role="status"></div>
+                    </form>
+                </div>
+            </section>
+
+        
+<div class="card">
+    <h2>Change Password</h2>
+    <p class="muted">
+        Update your password to keep your Flowday account secure.
+    </p>
+
+    <form id="passwordForm">
+        <div class="field">
+            <label for="currentPassword">Current password</label>
+            <input
+                id="currentPassword"
+                type="password"
+                autocomplete="current-password"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="newPassword">New password</label>
+            <input
+                id="newPassword"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <div class="field">
+            <label for="confirmPassword">Confirm new password</label>
+            <input
+                id="confirmPassword"
+                type="password"
+                minlength="8"
+                autocomplete="new-password"
+                required
+            >
+        </div>
+
+        <div class="actions">
+            <button class="btn primary" type="submit">
+                Change Password
+            </button>
+        </div>
+
+        <div id="passwordStatus" class="status" role="status"></div>
+    </form>
+</div>
+
+
+            <section id="appearance" class="page hidden">
+                <h1>Appearance</h1>
+                <p class="subtitle">Choose how Flowday looks on your screen.</p>
+                  
+<div class="card">
+    <h2>Layout & Display</h2>
+    <p class="muted">Customize how tasks appear on your screen.</p>
+
+    <div class="setting-row">
+        <div>
+            <strong>Task density</strong>
+            <div class="muted">Choose the spacing between tasks.</div>
+        </div>
+        <select id="taskDensity">
+            <option value="comfortable">Comfortable</option>
+            <option value="compact">Compact</option>
+        </select>
+    </div>
+
+    <div class="setting-row">
+        <div>
+            <strong>Show completed tasks</strong>
+            <div class="muted">Keep completed tasks visible in your lists.</div>
+        </div>
+        <input id="showCompleted" type="checkbox" checked>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Date & Time</h2>
+    <p class="muted">Choose your preferred date and time format.</p>
+
+    <div class="setting-row">
+        <div>
+            <strong>Date format</strong>
+            <div class="muted">Select how dates are displayed.</div>
+        </div>
+        <select id="dateFormat">
+            <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+            <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+            <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+        </select>
+    </div>
+
+    <div class="setting-row">
+        <div>
+            <strong>Time format</strong>
+            <div class="muted">Choose 12-hour or 24-hour time.</div>
+        </div>
+        <select id="timeFormat">
+            <option value="12">12-hour</option>
+            <option value="24">24-hour</option>
+        </select>
+    </div>
+</div>
+
+<div class="card">
+    <h2>Accessibility</h2>
+    <p class="muted">Adjust visual effects for a more comfortable experience.</p>
+
+    <div class="setting-row">
+        <div>
+            <strong>Reduce animations</strong>
+            <div class="muted">Reduce motion effects where supported.</div>
+        </div>
+        <input id="reduceAnimations" type="checkbox">
+    </div>
+</div>
+
+            </section>
+
+            <section id="preferences" class="page hidden">
+                <h1>Preferences</h1>
+                <p class="subtitle">Set up your preferred Flowday experience.</p>
+                <div class="card">
+                    <h2>General preferences</h2>
+                    <div class="setting-row">
+                        <div><strong>Default task view</strong><div class="muted">Choose which view to open first.</div></div>
+                        <select id="defaultView">
+                            <option value="all">All Tasks</option>
+                            <option value="today">My Day</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="starred">Important</option>
+                        </select>
+                    </div>
+                    <p class="muted">This selection is saved in this browser for now.</p>
+                </div>
+            </section>
+        </div>
+    </main>
+</div>
+
+<script>
+    const pages = document.querySelectorAll('.page');
+    const navButtons = document.querySelectorAll('[data-page]');
+
+    navButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            navButtons.forEach(item => item.classList.remove('active'));
+            button.classList.add('active');
+            pages.forEach(page => page.classList.toggle('hidden', page.id !== button.dataset.page));
+        });
+    });
+
+    const nameInput = document.getElementById('profileNameInput');
+    const emailInput = document.getElementById('profileEmailInput');
+    const statusBox = document.getElementById('profileStatus');
+    const saveButton = document.getElementById('saveProfile');
+    let originalName = '';
+
+    async function loadProfile() {
+        try {
+            const response = await fetch('/me');
+            if (response.status === 401) {
+                window.location.href = '/login-page';
+                return;
+            }
+            const user = await response.json();
+            if (!response.ok) throw new Error(user.message || 'Unable to load profile.');
+            originalName = user.name || '';
+            nameInput.value = originalName;
+            emailInput.value = user.email || '';
+            
+if (user.photo_url) {
+    profileAvatar.innerHTML = '';
+
+    const image = document.createElement('img');
+    image.src = user.photo_url + '?t=' + Date.now();
+    image.alt = 'Profile photo';
+    image.style.width = '100%';
+    image.style.height = '100%';
+    image.style.objectFit = 'cover';
+    image.style.borderRadius = '50%';
+
+    profileAvatar.appendChild(image);
+}
+        } catch (error) {
+            statusBox.textContent = 'Could not load profile. Refresh the page and try again.';
+        }
+    }
+
+    document.getElementById('cancelProfile').addEventListener('click', () => {
+        nameInput.value = originalName;
+        statusBox.textContent = '';
+    });
+
+    document.getElementById('profileForm').addEventListener('submit', async event => {
+        event.preventDefault();
+        const name = nameInput.value.trim();
+        const email = emailInput.value.trim().toLowerCase();
+
+        if (!name) {
+            statusBox.textContent = 'Please enter your name.';
+            return;
+        }
+        if (!email || !emailInput.checkValidity()) {
+    statusBox.textContent = 'Please enter a valid email address.';
+    return;
+}
+
+        saveButton.disabled = true;
+        saveButton.textContent = 'Saving...';
+        statusBox.textContent = '';
+
+        try {
+            const response = await fetch('/api/profile', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, email })
+            });
+            const result = await response.json();
+
+            if (!response.ok) {
+                throw new Error(result.message || 'Unable to save profile.');
+            }
+
+            originalName = result.name;
+            nameInput.value = result.name;
+            statusBox.textContent = 'Profile updated successfully.';
+        } catch (error) {
+            statusBox.textContent = error.message || 'Unable to save profile.';
+        } finally {
+            saveButton.disabled = false;
+            saveButton.textContent = 'Save Changes';
+        }
+    });
+
+    const viewSelect = document.getElementById('defaultView');
+    const taskDensity = document.getElementById('taskDensity');
+
+if (taskDensity) {
+    taskDensity.value =
+        localStorage.getItem('flowday_task_density') || 'comfortable';
+
+    taskDensity.addEventListener('change', () => {
+        localStorage.setItem('flowday_task_density', taskDensity.value);
+    });
+}
+
+if (viewSelect) {
+    viewSelect.value =
+        localStorage.getItem('flowday_default_view') || 'all';
+
+    viewSelect.addEventListener('change', () => {
+        localStorage.setItem('flowday_default_view', viewSelect.value);
+    });
+}
+
+
+    
+const appearanceSettings = [
+    ['taskDensity', 'flowday_task_density', 'comfortable'],
+    ['showCompleted', 'flowday_show_completed', 'true'],
+    ['dateFormat', 'flowday_date_format', 'DD/MM/YYYY'],
+    ['timeFormat', 'flowday_time_format', '12'],
+    ['reduceAnimations', 'flowday_reduce_animations', 'false']
+];
+
+appearanceSettings.forEach(([id, key, defaultValue]) => {
+    const control = document.getElementById(id);
+    const savedValue = localStorage.getItem(key) ?? defaultValue;
+
+    if (control.type === 'checkbox') {
+        control.checked = savedValue === 'true';
+    } else {
+        control.value = savedValue;
+    }
+
+    control.addEventListener('change', () => {
+        localStorage.setItem(
+            key,
+            control.type === 'checkbox'
+                ? String(control.checked)
+                : control.value
+        );
+    });
+});
+
+
+    viewSelect.value = localStorage.getItem('flowday_default_view') || 'all';
+    viewSelect.addEventListener('change', () => {
+        localStorage.setItem('flowday_default_view', viewSelect.value);
+    });
+
+const photoInput = document.getElementById('profilePhotoInput');
+const uploadPhotoButton = document.getElementById('uploadPhotoButton');
+const photoStatus = document.getElementById('photoStatus');
+const profileAvatar = document.getElementById('profileAvatar');
+
+uploadPhotoButton.addEventListener('click', async () => {
+    const photo = photoInput.files[0];
+
+    if (!photo) {
+        photoStatus.textContent = 'Please choose a photo first.';
+        return;
+    }
+
+    if (photo.size > 2 * 1024 * 1024) {
+        photoStatus.textContent = 'Photo must be 2 MB or smaller.';
+        return;
+    }
+
+    uploadPhotoButton.disabled = true;
+    photoStatus.textContent = 'Uploading...';
+
+    try {
+        const formData = new FormData();
+        formData.append('photo', photo);
+
+        const response = await fetch('/api/profile/photo', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Upload failed.');
+        }
+
+        profileAvatar.innerHTML = '';
+        const image = document.createElement('img');
+        image.src = result.photo_url;
+        image.alt = 'Profile photo';
+        image.style.width = '100%';
+        image.style.height = '100%';
+        image.style.objectFit = 'cover';
+        image.style.borderRadius = '50%';
+        profileAvatar.appendChild(image);
+
+        photoStatus.textContent = 'Profile photo uploaded successfully.';
+    } catch (error) {
+        photoStatus.textContent = error.message || 'Unable to upload photo.';
+    } finally {
+        uploadPhotoButton.disabled = false;
+    }
+});
+    loadProfile();
+
+const passwordForm = document.getElementById('passwordForm');
+const passwordStatus = document.getElementById('passwordStatus');
+
+passwordForm.addEventListener('submit', async event => {
+    event.preventDefault();
+
+    const currentPassword = document.getElementById('currentPassword').value;
+    const newPassword = document.getElementById('newPassword').value;
+    const confirmPassword = document.getElementById('confirmPassword').value;
+
+    if (newPassword !== confirmPassword) {
+        passwordStatus.textContent = 'New passwords do not match.';
+        return;
+    }
+
+    const button = passwordForm.querySelector('button[type="submit"]');
+    button.disabled = true;
+    button.textContent = 'Changing...';
+    passwordStatus.textContent = '';
+
+    try {
+        const response = await fetch('/api/change-password', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                currentPassword,
+                newPassword,
+                confirmPassword
+            })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            throw new Error(result.message || 'Unable to change password.');
+        }
+
+        passwordStatus.textContent = result.message;
+        passwordForm.reset();
+    } catch (error) {
+        passwordStatus.textContent =
+            error.message || 'Unable to change password.';
+    } finally {
+        button.disabled = false;
+        button.textContent = 'Change Password';
+    }
+});
+
+
+const notificationSettings = [
+    ['taskReminders', 'flowday_task_reminders'],
+    ['dueDateAlerts', 'flowday_due_date_alerts'],
+    ['dailySummary', 'flowday_daily_summary']
+];
+
+
+const reminderKey = 'flowday_sent_reminders';
+
+const defaultViewSelect = document.getElementById('defaultView');
+
+if (defaultViewSelect) {
+    defaultViewSelect.value =
+        localStorage.getItem('flowday_default_view') || 'all';
+
+    defaultViewSelect.addEventListener('change', () => {
+        localStorage.setItem(
+            'flowday_default_view',
+            defaultViewSelect.value
+        );
+    });
+}
+
+</script>
+
+<script>
+(function () {
+    try {
+        const saved = JSON.parse(localStorage.getItem('flowday_pro_v1'));
+        const isDark = saved?.theme !== 'light';
+        document.body.classList.toggle('light-theme', !isDark);
+    } catch (e) {
+        document.body.classList.remove('light-theme');
+    }
+})();
+</script>
+</body>
+</html>
